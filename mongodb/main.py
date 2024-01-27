@@ -1,62 +1,47 @@
-# mongodb-consumer/consumer.py
-
-# from confluent_kafka import Consumer, KafkaError
-# import pymongo
-# from datetime import datetime
-# from event import Event
-
 import json
 from kafka import KafkaConsumer
+from pymongo import MongoClient
+from datetime import datetime
 
-kafka_server = ["192.168.1.22"]
-
-topic = "test_topic"
+kafka_server = ["localhost"]
+topic = "events"
 
 consumer = KafkaConsumer(
+    topic,
     bootstrap_servers=kafka_server,
-    value_deserializer=json.loads,
-    auto_offset_reset="latest",
+    auto_offset_reset='earliest',  # Start reading from the beginning of the topic
+    value_deserializer=lambda x: json.loads(x.decode('utf-8'))
 )
 
-consumer.subscribe(topic)
+mongo_client = pymongo.MongoClient("mongodb://localhost:27017/")
+db = mongo_client["myEventsDB"]  # Replace "mydatabase" with your desired database name
+collection = db["events"]
 
-while True:
-    data = next(consumer)
-    print(data)
-    print(data.value)
+for message in consumer:
+    event_data = message.value
+    print(event_data)
 
-# kafka_conf = {
-#     'bootstrap.servers': 'kafka:9092',
-#     'group.id': 'my_consumer_group',
-#     'auto.offset.reset': 'earliest'
-# }
+    # Insert the event into MongoDB
+    event_data["timestamp"] = datetime.strptime(event_data["timestamp"], "%Y-%m-%d %H:%M:%S.%f")
+    collection.insert_one(event_data)
 
-# consumer = Consumer(kafka_conf)
-# topic = 'events'
 
-# mongo_client = pymongo.MongoClient("mongodb://mongodb:27017/")
-# db = mongo_client["events"]
-# collection = db["event_collection"]
+# import json
+# from kafka import KafkaConsumer
 
-# consumer.subscribe([topic])
+# kafka_server = ["192.168.1.22"]
+
+# topic = "test_topic"
+
+# consumer = KafkaConsumer(
+#     bootstrap_servers=kafka_server,
+#     value_deserializer=json.loads,
+#     auto_offset_reset="latest",
+# )
+
+# consumer.subscribe(topic)
 
 # while True:
-#     msg = consumer.poll(1.0)
-
-#     if msg is None:
-#         continue
-#     if msg.error():
-#         if msg.error().code() == KafkaError._PARTITION_EOF:
-#             continue
-#         else:
-#             print(msg.error())
-#             break
-
-#     # Deserialize the message value
-#     event_data = json.loads(msg.value())
-#     event_data["timestamp"] = datetime.strptime(event_data["timestamp"], '%Y-%m-%d %H:%M:%S')
-
-#     event = Event(**event_data)
-
-#     # Save the event to MongoDB
-#     collection.insert_one(event_data)
+#     data = next(consumer)
+#     print(data)
+#     print(data.value)

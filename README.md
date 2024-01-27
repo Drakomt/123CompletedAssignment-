@@ -1,7 +1,10 @@
 "# 123CompletedAssignment-" 
 
-Consumer:
-docker exec -it kafka kafka-console-consumer --bootstrap-server localhost:9092 --topic test_topic
+Consumer Test:
+docker exec -it kafka kafka-console-consumer --bootstrap-server localhost:9092 --topic test_topic    //confluentinc image
+docker exec -it <consumer-container-id> kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-topic --from-beginning   //bitnami image
 
-Producer:
-docker exec -it kafka kafka-console-producer --bootstrap-server localhost:9092 --topic test_topic
+
+Producer Test:
+docker exec -it kafka kafka-console-producer --bootstrap-server localhost:9092 --topic test_topic   //confluentinc image
+docker exec -it <consumer-container-id> kafka-console-producer.sh --bootstrap-server localhost:9092 --topic test-topic --from-beginning   //bitnami image

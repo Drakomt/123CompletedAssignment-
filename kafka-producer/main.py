@@ -2,8 +2,9 @@ import json
 from datetime import datetime
 from time import sleep
 from kafka import KafkaProducer
+from event import Event
 
-kafka_server = ["localhost"]
+kafka_server = ["localhost:9092"]
 topic = "events"
 
 producer = KafkaProducer(
@@ -12,11 +13,8 @@ producer = KafkaProducer(
 )
 
 while True:
-    event_data = {
-        "event_type": "random_event",
-        "timestamp": str(datetime.now()),
-        "data": {"key": "value"}
-    }
+    event_instance = Event()
+    event_data = event_instance.generate_event()
 
     producer.send(topic, event_data)
     producer.flush()

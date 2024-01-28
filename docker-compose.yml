@@ -4,8 +4,6 @@ services:
     image: 'bitnami/kafka:latest'
     hostname: kafka
     container_name: kafka
-    networks:
-      - my_network
     volumes:
       # - ./kafka-cluster-without-zk/kafka/data:/var/lib/kafka/data
       - "kafka_data:/bitnami"
@@ -50,31 +48,54 @@ services:
       - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
       - BITNAMI_DEBUG=yes
       - KAFKA_CFG_NUM_PARTITIONS=2
-      - KAFKA_CREATE_TOPICS= "test_topic:1:1"
+      - KAFKA_CREATE_TOPICS= "events:1:1"
+
+  kafka-producer:
+    build:
+      context: ./kafka-producer
+    depends_on:
+      - kafka
+    volumes:
+      - ./kafka-producer:/app
+
+  kafka-consumer:
+    build:
+      context: ./kafka-consumer
+    depends_on:
+      - kafka
+      - mongodb
+    volumes:
+      - ./kafka-consumer:/app
 
   mongodb:
     image: mongo:latest
     container_name: mongodb
-    # environment:
-    #   MONGO_INITDB_ROOT_USERNAME: mongoadmin
-    #   MONGO_INITDB_ROOT_PASSWORD: admin12345
-    networks:
-      - my_network
+    hostname: mongodb
+    environment:
+      - MONGO_INITDB_DATABASE=test
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
     ports:
       - "27017:27017"
+    volumes:
+      # seeding scripts
+      - ./mongo-entrypoint:/docker-entrypoint-initdb.d
+      # named volumes
+      - mongodb:/data/db
+      - mongoconfig:/data/configdb
+    restart: unless-stopped
 
   redis:
     image: redis:latest
     container_name: redis
-    networks:
-      - my_network
     ports:
       - "6379:6379"
+
 volumes:
+  mongodb:
+  mongoconfig:
   kafka_data:
     driver: local
-networks:
-  my_network:
 
 # version: '2'
 # services:

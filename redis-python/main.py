@@ -29,22 +29,23 @@ def process_new_objects():
 
     # Query MongoDB for new objects since the latest timestamp
     query = {"timestamp": {"$gt": latest_timestamp}} if latest_timestamp else {}
-    new_objects = list(mongo_collection.find(query).sort("timestamp", -1))
+    new_objects = list(mongo_collection.find(query).sort("timestamp", 1))
 
     # Debug prints
-    print(f"---------------------Latest Timestamp from Redis: {latest_timestamp}---------------------")
-    print(f"---------------------Query Timestamp Range: {latest_timestamp} - {datetime.now()}---------------------")
+    # print(f"---------------------Latest Timestamp from Redis: {latest_timestamp}---------------------")
+    # print(f"---------------------Query Timestamp Range: {latest_timestamp} - {datetime.now()}---------------------")
 
     # Process and insert new objects into Redis
     for obj in new_objects:
         key = f"{obj['reporterId']}:{datetime.strftime(obj['timestamp'],'%Y-%m-%d-%H:%M:%S')}"
         obj_json = json.dumps(obj, default=str)
         redis_client.set(key, obj_json)
-        print(f"Inserted new object into Redis: {obj}")
+        print(f"Inserted new object into Redis: {obj_json}")
 
     # Update the latest timestamp in Redis
     if new_objects:
         latest_timestamp = new_objects[-1]['timestamp']
+        print(f"---------------------latest_timestamp: {latest_timestamp}---------------------")
         update_latest_timestamp(latest_timestamp)
 
 

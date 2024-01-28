@@ -12,3 +12,9 @@ docker exec -it <consumer-container-id> kafka-console-producer.sh --bootstrap-se
 
 Mongodb sh (Terminal/Shell):
 docker exec -it mongodb mongosh -u admin -p admin
+
+
+Redis View:
+docker exec -it <redis-container-name> redis-cli      ==>     docker exec -it redis redis-cli
+KEYS *       ==> show all keys
+GET <your-key>       ==> show the value of the key

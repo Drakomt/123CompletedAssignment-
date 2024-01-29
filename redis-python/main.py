@@ -34,8 +34,8 @@ def process_new_objects():
         key = f"{obj['reporterId']}:{datetime.strftime(obj['timestamp'],'%Y-%m-%d-%H:%M:%S')}"
         obj_json = json.dumps(obj, default=str)
         redis_client.set(key, obj_json)
-        update_latest_timestamp(obj['timestamp'])
         print(f"Inserted new object into Redis: {obj_json}")
+        update_latest_timestamp(obj['timestamp'])
 
 
 def main():

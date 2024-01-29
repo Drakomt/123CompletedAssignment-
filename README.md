@@ -1,5 +1,10 @@
 "# 123CompletedAssignment-" 
 
+Docker Commands:
+docker-compose up -d     ==> Start the project (-d for decoupled mode)
+docker-compose down      ==> Stop the project (removes the containers)
+docker-compose ps        ==> Print active containers
+
 Consumer Test:
 docker exec -it kafka kafka-console-consumer --bootstrap-server localhost:9092 --topic events
 

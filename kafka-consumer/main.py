@@ -2,21 +2,28 @@ import json
 from kafka import KafkaConsumer
 from pymongo import MongoClient
 from datetime import datetime
+import configparser
 
-kafka_server = ['kafka:9092']
-topic = "events"
+cfg = configparser.ConfigParser()
+cfg.read('config.ini')
+
+# kafka_server = ['kafka:9092']
+# topic = "events"
+
+# kafka_server = cfg.get('Kafka','kafka_server')
+# topic = cfg.get('Kafka','topic')
 
 consumer = KafkaConsumer(
-    topic,
-    bootstrap_servers=kafka_server,
+    cfg.get('Kafka','topic'),
+    bootstrap_servers=cfg.get('Kafka','kafka_server'),
     api_version=(0,11,5),
-    auto_offset_reset='earliest',  # Start reading from the beginning of the topic
+    auto_offset_reset=cfg.get('Kafka','autoOffsetReset'),  # Start reading from the beginning of the topic
     value_deserializer=lambda x: json.loads(x.decode('utf-8'))
 )
 
-mongo_client = MongoClient("mongodb://mongodb")
-db = mongo_client["myEventsDB"]
-collection = db["events"]
+mongo_client = MongoClient(cfg.get('MongoDb','MongoConnectionString'))
+db = mongo_client[cfg.get('MongoDb','MongoDbName')]
+collection = db[cfg.get('MongoDb','MongoDbCollectionName')]
 
 
 for message in consumer:

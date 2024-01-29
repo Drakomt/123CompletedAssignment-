@@ -3,14 +3,18 @@ import redis
 from pymongo import MongoClient
 from datetime import datetime
 import time
+import configparser
+
+cfg = configparser.ConfigParser()
+cfg.read('config.ini')
 
 # Connect to MongoDB
-mongo_client = MongoClient("mongodb://mongodb")
-mongo_db = mongo_client["myEventsDB"]  # Replace with your MongoDB database name
-mongo_collection = mongo_db["events"]
+mongo_client = MongoClient(cfg.get('MongoDb','MongoConnectionString'))
+mongo_db = mongo_client[cfg.get('MongoDb','MongoDbName')]  # Replace with your MongoDB database name
+mongo_collection = mongo_db[cfg.get('MongoDb','MongoDbCollectionName')]
 
 # Connect to Redis
-redis_client = redis.StrictRedis(host='redis', port=6379, decode_responses=True)
+redis_client = redis.Redis(host=cfg.get('Redis','RedisHostName'), port=cfg.getint('Redis','RedisPort'), decode_responses=True)
 
 def get_latest_timestamp():
     # Retrieve the latest timestamp from Redis
@@ -54,7 +58,7 @@ def process_new_objects():
 def main():
     while True:
         process_new_objects()
-        time.sleep(30)
+        time.sleep(cfg.getint('Redis','RedisSleepTime'))
 
 if __name__ == "__main__":
     main()

@@ -82,6 +82,7 @@ services:
       - kafka
     volumes:
       - ./kafka-producer:/app
+      - ./config.ini:/config.ini
 
   kafka-consumer:
     build:
@@ -91,6 +92,7 @@ services:
       - mongodb
     volumes:
       - ./kafka-consumer:/app
+      - ./config.ini:/config.ini
 
   mongodb:
     image: mongo:latest
@@ -123,6 +125,7 @@ services:
       - redis
     volumes:
       - ./redis-python:/app
+      - ./config.ini:/config.ini
 
 volumes:
   mongodb:

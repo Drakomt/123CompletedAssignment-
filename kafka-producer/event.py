@@ -1,17 +1,21 @@
 from faker import Faker
 from datetime import datetime
+import configparser
+
+cfg = configparser.ConfigParser()
+cfg.read('config.ini')
 
 class Event:
     fake = Faker()
-    reporter_counter = 0  # Counter for incrementing reporterId
+    reporter_counter = cfg.getint('EventClass','reporterIdCounterStart')  # Counter for incrementing reporterId
 
     @classmethod
     def generate_event(cls):
-        cls.reporter_counter += 1  # Increment reporterId counter
+        cls.reporter_counter += cfg.getint('EventClass','reporterIdCounterIncrementNumber') # Increment reporterId counter
         return {
             "reporterId": cls.reporter_counter,
             "timestamp": datetime.strftime(datetime.now(), '%Y-%m-%d-%H:%M:%S'),
-            "metricId": cls.fake.random_int(min=1, max=1000),
-            "metricValue": cls.fake.random_int(min=1, max=100),
+            "metricId": cls.fake.random_int(min=cfg.getint('EventClass','metricIdMin'), max=cfg.getint('EventClass','metricIdMax')),
+            "metricValue": cls.fake.random_int(min=cfg.getint('EventClass','metricValueMin'), max=cfg.getint('EventClass','metricValueMax')),
             "message": cls.fake.text(),
         }

@@ -7,17 +7,11 @@ import configparser
 cfg = configparser.ConfigParser()
 cfg.read('config.ini')
 
-# kafka_server = ['kafka:9092']
-# topic = "events"
-
-# kafka_server = cfg.get('Kafka','kafka_server')
-# topic = cfg.get('Kafka','topic')
-
 consumer = KafkaConsumer(
     cfg.get('Kafka','topic'),
     bootstrap_servers=cfg.get('Kafka','kafka_server'),
     api_version=(0,11,5),
-    auto_offset_reset=cfg.get('Kafka','autoOffsetReset'),  # Start reading from the beginning of the topic
+    auto_offset_reset=cfg.get('Kafka','autoOffsetReset'),
     value_deserializer=lambda x: json.loads(x.decode('utf-8'))
 )
 
@@ -31,7 +25,6 @@ for message in consumer:
     event_data = message.value
     print("Event Data:", event_data)
 
-    # Insert the event into MongoDB
     event_data["timestamp"] = datetime.strptime(event_data["timestamp"], '%Y-%m-%d-%H:%M:%S')
     collection.insert_one(event_data)
     print("Inserted into MongoDB")

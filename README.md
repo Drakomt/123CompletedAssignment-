@@ -1,20 +1,15 @@
 "# 123CompletedAssignment-" 
 
 Consumer Test:
-docker exec -it kafka kafka-console-consumer --bootstrap-server localhost:9092 --topic test_topic    //confluentinc image
-docker exec -it <consumer-container-id> kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-topic --from-beginning   //bitnami image
-
+docker exec -it kafka kafka-console-consumer --bootstrap-server localhost:9092 --topic events
 
 Producer Test:
-docker exec -it kafka kafka-console-producer --bootstrap-server localhost:9092 --topic test_topic   //confluentinc image
-docker exec -it <consumer-container-id> kafka-console-producer.sh --bootstrap-server localhost:9092 --topic test-topic --from-beginning   //bitnami image
-
+docker exec -it kafka kafka-console-producer --bootstrap-server localhost:9092 --topic events
 
 Mongodb sh (Terminal/Shell):
-docker exec -it mongodb mongosh -u admin -p admin
-
+docker exec -it mongodb mongosh     ==>  add "-u admin -p admin" for username and password
 
 Redis View:
-docker exec -it <redis-container-name> redis-cli      ==>     docker exec -it redis redis-cli
+docker exec -it redis redis-cli      ==>    redis Terminal/Shell Start
 KEYS *       ==> show all keys
 GET <your-key>       ==> show the value of the key

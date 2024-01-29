@@ -1,5 +1,4 @@
 import json
-from datetime import datetime
 from time import sleep
 from kafka import KafkaProducer
 from event import Event
@@ -7,9 +6,6 @@ import configparser
 
 cfg = configparser.ConfigParser()
 cfg.read('config.ini')
-
-# kafka_server = ['kafka:9092']
-# topic = "events"
 
 producer = KafkaProducer(
     bootstrap_servers=cfg.get('Kafka','kafka_server'),

@@ -7,11 +7,11 @@ cfg.read('config.ini')
 
 class Event:
     fake = Faker()
-    reporter_counter = cfg.getint('EventClass','reporterIdCounterStart')  # Counter for incrementing reporterId
+    reporter_counter = cfg.getint('EventClass','reporterIdCounterStart')
 
     @classmethod
     def generate_event(cls):
-        cls.reporter_counter += cfg.getint('EventClass','reporterIdCounterIncrementNumber') # Increment reporterId counter
+        cls.reporter_counter += cfg.getint('EventClass','reporterIdCounterIncrementNumber')
         return {
             "reporterId": cls.reporter_counter,
             "timestamp": datetime.strftime(datetime.now(), '%Y-%m-%d-%H:%M:%S'),
